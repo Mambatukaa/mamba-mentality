@@ -7,6 +7,10 @@ const config: Configuration = {
     (process.env.NODE_ENV as 'production' | 'development' | undefined) ??
     'development',
   entry: './src/entrypoint.tsx',
+  output: {
+    filename: 'bundle.js',
+    path: path.resolve(__dirname, 'dist')
+  },
   module: {
     rules: [
       {
@@ -16,16 +20,12 @@ const config: Configuration = {
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader']
+        use: ['style-loader', 'css-loader', 'postcss-loader']
       }
     ]
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js']
-  },
-  output: {
-    filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist')
   },
   plugins: [
     new HtmlWebpackPlugin({
