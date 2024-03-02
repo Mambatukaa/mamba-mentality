@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useState } from 'react';
 
 const navigation = [
-  { name: 'Home', href: '/home', icon: HomeIcon },
+  { name: 'Home', href: '/', icon: HomeIcon },
   { name: 'Users', href: '/users', icon: UsersIcon },
   { name: 'Products', href: '/products', icon: FolderIcon }
 ];
