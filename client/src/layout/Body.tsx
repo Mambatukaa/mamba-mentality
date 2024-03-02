@@ -1,9 +1,7 @@
+import ProductRoutes from '../pages/products/routes';
+
 const Body = () => {
-  return (
-    <div className="bg-purple-500">
-      <div>body</div>
-    </div>
-  );
+  return <ProductRoutes />;
 };
 
 export default Body;

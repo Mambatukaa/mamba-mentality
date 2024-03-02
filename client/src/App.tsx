@@ -1,11 +1,12 @@
 import './style.css';
 import Wrapper from './layout/Wrapper';
+import { BrowserRouter } from 'react-router-dom';
 
 const App = () => {
   return (
-    <div>
+    <BrowserRouter>
       <Wrapper />
-    </div>
+    </BrowserRouter>
   );
 };
 

@@ -1,15 +1,22 @@
 import path from 'path';
-import { Configuration } from 'webpack';
+import * as webpack from 'webpack';
+import * as webpackDevServer from 'webpack-dev-server';
+
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-const config: Configuration = {
+const config: webpack.Configuration = {
   mode:
     (process.env.NODE_ENV as 'production' | 'development' | undefined) ??
     'development',
   entry: './src/entrypoint.tsx',
   output: {
     filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist')
+    path: path.resolve(__dirname, 'dist'),
+    publicPath: '/'
+  },
+  devServer: {
+    port: 3000,
+    historyApiFallback: true
   },
   module: {
     rules: [

@@ -8,7 +8,6 @@ const Wrapper: React.FC = () => {
     <div className="grid sm:grid-rows-[1fr_20fr] grid-cols-[1fr_7fr] w-screen h-screen">
       <Header />
       <SideBar />
-
       <Body />
     </div>
   );
