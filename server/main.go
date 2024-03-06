@@ -1,16 +1,16 @@
 package main
 
-import ("fmt"
+import (
+	"fmt"
 
- "mamba-mentality.com/data")
-
-var message string = "Hello World";
+	"mamba-mentality.com/api"
+)
 
 func main() {
-	fmt.Println("---------------------------");
-	fmt.Println("Hello World!")
 
-	data.CollectionsTest();
+	rate, err := api.GetRate("BTC");
 
-	
+	if(err == nil) {
+		fmt.Printf("The rate for %v is %.2f\n", rate.Currency, rate.Price);
+	};
 };
