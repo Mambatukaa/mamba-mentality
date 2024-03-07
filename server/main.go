@@ -2,34 +2,31 @@ package main
 
 import (
 	"fmt"
-	"sync"
 
-	"mamba-mentality.com/api"
+	"github.com/gin-gonic/gin"
+
+	"mamba-mentality.com/controllers"
 )
 
 func main() {
-	currencies := []string {"BTC", "ETH", "BCH"}
+	fmt.Print(("hello world"));
 
-	var wg sync.WaitGroup;
-	
-	for _, currency := range(currencies) {
-		wg.Add(1);
+	router := gin.Default();
 
-		go func (currencyCode string) {
-			getCurrencyData(currencyCode);
-			wg.Done();
-		}(currency)
+	router.GET("/albums", controllers.GetAlbums)
+	router.GET("/album", controllers.GetAlbum)
+	router.POST("/album", controllers.PostAlbum)
+	router.DELETE("/album", controllers.DeleteAlbum)
 
-	}
 
-	wg.Wait()
+	router.Run("localhost:8000");
 };
 
 
-func getCurrencyData(currency string) {
-	rate, err := api.GetRate(currency);
+// func getCurrencyData(currency string) {
+// 	rate, err := api.GetRate(currency);
 
-	if(err == nil) {
-		fmt.Printf("The rate for %v is %.2f\n", rate.Currency, rate.Price);
-	};
-}
+// 	if(err == nil) {
+// 		fmt.Printf("The rate for %v is %.2f\n", rate.Currency, rate.Price);
+// 	};
+// }
