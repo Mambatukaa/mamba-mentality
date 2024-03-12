@@ -8,7 +8,7 @@ import (
 	"mamba-mentality.com/controllers"
 )
 
-func main() {
+func mains() {
 	fmt.Print(("hello world"));
 
 	router := gin.Default();
