@@ -15,8 +15,6 @@ import (
 	"mamba-mentality.com/graph"
 )
 
-const defaultPort = "8080"
-
 func init() {
 	err := godotenv.Load()
 	
@@ -44,10 +42,6 @@ func init() {
 
 func main() {
 	PORT := os.Getenv("PORT")
-
-	if PORT == "" {
-		PORT = defaultPort
-	}
 
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
 
