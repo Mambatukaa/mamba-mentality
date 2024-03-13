@@ -1,32 +1,59 @@
 package main
 
 import (
+	"log"
+	"net/http"
+	"os"
+
+	"context"
 	"fmt"
 
-	"github.com/gin-gonic/gin"
-
-	"mamba-mentality.com/controllers"
+	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/joho/godotenv"
+	"mamba-mentality.com/graph"
 )
 
-func mains() {
-	fmt.Print(("hello world"));
+const defaultPort = "8080"
 
-	router := gin.Default();
+func init() {
+	err := godotenv.Load()
+	
+  if err != nil {
+    log.Fatal("Error loading .env file")
+  }
 
-	router.GET("/albums", controllers.GetAlbums)
-	router.GET("/album", controllers.GetAlbum)
-	router.POST("/album", controllers.PostAlbum)
-	router.DELETE("/album", controllers.DeleteAlbum)
+	DATABASE_URL := os.Getenv("DATABASE_URL");
 
+	if(DATABASE_URL == "") {
+		fmt.Fprintf(os.Stderr, "Make sure your DB connection url okay? URL: %v", DATABASE_URL);
+		os.Exit(1);
+	}
 
-	router.Run("localhost:8000");
+	// connect PostreSQL
+	dbpool, err := pgxpool.New(context.Background(), DATABASE_URL)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(1)
+	}
+	fmt.Println("DB connection successfully. 🚀")
+	defer dbpool.Close()
+
 };
 
+func main() {
+	PORT := os.Getenv("PORT")
 
-// func getCurrencyData(currency string) {
-// 	rate, err := api.GetRate(currency);
+	if PORT == "" {
+		PORT = defaultPort
+	}
 
-// 	if(err == nil) {
-// 		fmt.Printf("The rate for %v is %.2f\n", rate.Currency, rate.Price);
-// 	};
-// }
+	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
+
+	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	http.Handle("/query", srv)
+
+	log.Printf("connect to http://localhost:%s/ for GraphQL playground 🚀🚀🚀", PORT)
+	log.Fatal(http.ListenAndServe(":"+PORT, nil))
+}
