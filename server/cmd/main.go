@@ -2,53 +2,73 @@ package main
 
 import (
 	"log"
-	"net/http"
 	"os"
-
-	"context"
-	"fmt"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-	"mamba-mentality.com/internal/graphql"
+	"mamba-mentality.com/graph"
+	"mamba-mentality.com/internal/config"
 )
 
 func init() {
 	err := godotenv.Load()
-	
-  if err != nil {
-		fmt.Print("hahah", err)
-    log.Fatal("Error loading .env file")
-  }
 
-	DATABASE_URL := os.Getenv("DATABASE_URL");
-
-	if(DATABASE_URL == "") {
-		fmt.Fprintf(os.Stderr, "Make sure your DB connection url okay? URL: %v", DATABASE_URL);
-		os.Exit(1);
-	}
-
-	// connect PostreSQL
-	dbpool, err := pgxpool.New(context.Background(), DATABASE_URL)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
-		os.Exit(1)
+		log.Fatal("Error loading .env file")
 	}
-	fmt.Println("DB connection successfully. 🚀")
-	defer dbpool.Close()
 
-};
+	// db connection
+	config.DbConnection()
+}
+
+// Defining the Graphql handler
+func graphqlHandler() gin.HandlerFunc {
+	// NewExecutableSchema and Config are in the generated.go file
+	// Resolver is in the resolver.go file
+	h := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
+
+	return func(c *gin.Context) {
+		h.ServeHTTP(c.Writer, c.Request)
+	}
+}
+
+// Defining the Playground handler
+func playgroundHandler() gin.HandlerFunc {
+	h := playground.Handler("GraphQL", "/query")
+
+	return func(c *gin.Context) {
+		h.ServeHTTP(c.Writer, c.Request)
+	}
+}
 
 func main() {
 	PORT := os.Getenv("PORT")
 
-	srv := handler.NewDefaultServer(graphql.NewExecutableSchema(graphql.Config{Resolvers: &graphql.Resolver{}}))
-
-	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", srv)
+	// Setting up Gin
+	r := gin.Default()
+	r.POST("/query", graphqlHandler())
+	r.GET("/", playgroundHandler())
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground 🚀🚀🚀", PORT)
-	log.Fatal(http.ListenAndServe(":"+PORT, nil))
+
+	r.Run()
+	config.CloseDBPool()
+
 }
+
+// func main() {
+// 	PORT := os.Getenv("PORT")
+
+// 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
+
+// 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
+// 	http.Handle("/query", srv)
+
+// 	log.Printf("connect to http://localhost:%s/ for GraphQL playground 🚀🚀🚀", PORT)
+// 	log.Fatal(http.ListenAndServe(":"+PORT, nil))
+
+// 	// close db pool
+// 	config.CloseDBPool()
+// }
