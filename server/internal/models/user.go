@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"mamba-mentality.com/internal/config"
+	"mamba-mentality.com/internal/db"
 )
 
 type User struct {
@@ -15,7 +15,7 @@ type User struct {
 }
 
 func CreateUser(ctx context.Context) error {
-	db := config.GetDBPool()
+	db := db.GetDBPool()
 
 	var id int
 	var title string

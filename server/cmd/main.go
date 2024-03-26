@@ -8,8 +8,8 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-	"mamba-mentality.com/graph"
-	"mamba-mentality.com/internal/config"
+	"mamba-mentality.com/internal/db"
+	"mamba-mentality.com/internal/graphql"
 )
 
 func init() {
@@ -20,14 +20,14 @@ func init() {
 	}
 
 	// db connection
-	config.DbConnection()
+	db.DbConnection()
 }
 
 // Defining the Graphql handler
 func graphqlHandler() gin.HandlerFunc {
 	// NewExecutableSchema and Config are in the generated.go file
 	// Resolver is in the resolver.go file
-	h := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
+	h := handler.NewDefaultServer(graphql.NewExecutableSchema(graphql.Config{Resolvers: &graphql.Resolver{}}))
 
 	return func(c *gin.Context) {
 		h.ServeHTTP(c.Writer, c.Request)
@@ -54,7 +54,7 @@ func main() {
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground 🚀🚀🚀", PORT)
 
 	r.Run()
-	config.CloseDBPool()
+	db.CloseDBPool()
 
 }
 

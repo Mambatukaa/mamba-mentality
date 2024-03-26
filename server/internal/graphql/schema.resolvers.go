@@ -1,4 +1,4 @@
-package graph
+package graphql
 
 // This file will be automatically regenerated based on the schema, any resolver implementations
 // will be copied through when generating and any unknown code will be moved to the end.
@@ -8,13 +8,13 @@ import (
 	"context"
 	"fmt"
 
-	"mamba-mentality.com/graph/model"
-	"mamba-mentality.com/internal/config"
+	"mamba-mentality.com/internal/db"
+	"mamba-mentality.com/internal/graphql/model"
 )
 
 // AddUser is the resolver for the addUser field.
 func (r *mutationResolver) AddUser(ctx context.Context, input *model.UserInput) (*model.User, error) {
-	db := config.GetDBPool()
+	db := db.GetDBPool()
 	fmt.Println("=======================================")
 
 	sqlStatement := `
@@ -42,7 +42,7 @@ func (r *mutationResolver) AddUser(ctx context.Context, input *model.UserInput) 
 
 // Users is the resolver for the users field.
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
-	db := config.GetDBPool()
+	db := db.GetDBPool()
 	var (
 		firstName string
 		lastName  string
