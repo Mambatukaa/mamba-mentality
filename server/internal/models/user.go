@@ -4,14 +4,19 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"time"
 
 	"mamba-mentality.com/internal/db"
 )
 
 type User struct {
-	ID        int
+	ID        string
 	FirstName string
 	LastName  string
+	Email     string
+
+	CreatedAt time.Time
+	Password  string
 }
 
 func CreateUser(ctx context.Context) error {
