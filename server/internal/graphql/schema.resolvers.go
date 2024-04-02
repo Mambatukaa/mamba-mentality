@@ -15,7 +15,6 @@ import (
 // AddUser is the resolver for the addUser field.
 func (r *mutationResolver) AddUser(ctx context.Context, input *model.UserInput) (*model.User, error) {
 	db := db.GetDBPool()
-	fmt.Println("=======================================")
 
 	sqlStatement := `
 		INSERT INTO users (first_name, last_name)
@@ -40,6 +39,47 @@ func (r *mutationResolver) AddUser(ctx context.Context, input *model.UserInput) 
 	}, err
 }
 
+// AddProduct is the resolver for the addProduct field.
+func (r *mutationResolver) AddProduct(ctx context.Context, input *model.ProductInput) (*model.Product, error) {
+	db := db.GetDBPool()
+
+	sqlStatement := `
+		INSERT INTO products (name, price)
+		VALUES ($1, $2)
+		RETURNING id`
+
+	id := 0
+	err := db.QueryRow(ctx, sqlStatement, input.Name, input.Price).Scan(&id)
+
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("New record ID is:", id)
+
+	var name string
+	var price string
+
+	err = db.QueryRow(ctx,
+		`
+		SELECT name, price
+		FROM products
+		WHERE id=1
+		`).Scan(&name, &price)
+
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(name, price, "hahahahha")
+
+	return &model.Product{
+		Name:  &name,
+		Price: &price,
+	}, err
+
+}
+
 // Users is the resolver for the users field.
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 	db := db.GetDBPool()
@@ -49,8 +89,8 @@ func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 	)
 
 	sqlStatement := `
-		SELECT *
-		FROM users
+		SELECT first_name, last_name 
+		FROM users;
 	`
 
 	users, err := db.Query(ctx, sqlStatement)
@@ -72,6 +112,45 @@ func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 	}
 
 	return nil, err
+}
+
+// Products is the resolver for the products field.
+func (r *queryResolver) Products(ctx context.Context) ([]*model.Product, error) {
+	db := db.GetDBPool()
+
+	var (
+		name  string
+		price string
+	)
+
+	sqlStatement := `
+		SELECT name, price
+		FROM products;
+	`
+
+	products, err := db.Query(ctx, sqlStatement)
+
+	if err != nil {
+		panic(err)
+	}
+
+	defer products.Close()
+
+	answer := []*model.Product{}
+
+	for products.Next() {
+		err := products.Scan(&name, &price)
+
+		if err != nil {
+			panic(err)
+		}
+
+		answer = append(answer, &model.Product{Name: &name, Price: &price})
+
+		fmt.Println("\n", name, price)
+	}
+
+	return answer, err
 }
 
 // Mutation returns MutationResolver implementation.

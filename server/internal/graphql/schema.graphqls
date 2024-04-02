@@ -9,10 +9,23 @@ input UserInput {
   last_name: String!
 }
 
+type Product {
+  id: ID!
+  name: String
+  price: String
+}
+
+input ProductInput {
+  name: String
+  price: String
+}
+
 type Mutation {
   addUser(input: UserInput): User!
+  addProduct(input: ProductInput): Product!
 }
 
 type Query {
   users: [User]
+  products: [Product]
 }

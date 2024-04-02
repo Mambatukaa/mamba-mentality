@@ -5,6 +5,17 @@ package model
 type Mutation struct {
 }
 
+type Product struct {
+	ID    string  `json:"id"`
+	Name  *string `json:"name,omitempty"`
+	Price *string `json:"price,omitempty"`
+}
+
+type ProductInput struct {
+	Name  *string `json:"name,omitempty"`
+	Price *string `json:"price,omitempty"`
+}
+
 type Query struct {
 }
 
