@@ -7,7 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack",
-    "dev": "webpack serve"
+    "start": "webpack serve"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.18",
